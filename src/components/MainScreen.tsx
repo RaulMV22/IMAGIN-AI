@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import './MainScreen.css';
 
 const MainScreen = () => {
   const [prompt, setPrompt] = useState<string>("");
@@ -40,28 +41,43 @@ const MainScreen = () => {
     }
   };
 
+  // Desaparecer el mensaje de estado después de 5 segundos
+  useEffect(() => {
+    if (statusMessage) {
+      const timer = setTimeout(() => {
+        setStatusMessage("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [statusMessage]);
+
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
-      <h1>Generador de Imágenes con IA</h1>
-      <textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Describe la imagen que deseas generar"
-        style={{ width: "300px", height: "100px" }}
-      />
-      <br />
-      <button onClick={generateImage} disabled={loading}>
-        {loading ? "Generando..." : "Generar Imagen"}
-      </button>
-      <p>{statusMessage}</p>
-      {imageUrl && (
-        <div>
-          <h2>Imagen Generada:</h2>
-          <img src={imageUrl} alt="Generated" style={{ maxWidth: "100%" }} />
-        </div>
-      )}
+    <div className="main-container">
+      <div className="input-area">
+        <h1 className="title">Generador de Imágenes con IA</h1>
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Describe la imagen que deseas generar"
+          className="textarea"
+        />
+        <br />
+        <button onClick={generateImage} disabled={loading} className="btn">
+          {loading ? "Generando..." : "Generar Imagen"}
+        </button>
+        {statusMessage && <p className="status-message">{statusMessage}</p>}
+      </div>
+      <div className="image-area">
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt="Imagen generada"
+            className="generated-image"
+          />
+        )}
+      </div>
     </div>
   );
 };
 
-export default MainScreen;
+export default MainScreen;      
