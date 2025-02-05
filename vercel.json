@@ -1,0 +1,8 @@
+{
+    "functions": {
+      "api/replicate": {
+        "maxDuration": 300
+      }
+    }
+  }
+  
