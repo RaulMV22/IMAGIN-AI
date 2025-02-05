@@ -1,3 +1,4 @@
+/* 🌟 ESTILOS GENERALES */
 body {
     background: linear-gradient(135deg, #e0eafc, #cfdef3);
     font-family: 'Arial', sans-serif;
@@ -5,36 +6,58 @@ body {
     padding: 0;
 }
 
+/* 🌟 CONTENEDOR PRINCIPAL */
 .main-container {
     display: flex;
+    flex-direction: row;  
     justify-content: center;
     align-items: center;
     height: 100vh;
+    width: 100%;
+    gap: 5vw;
+    padding: 2vw;
 }
 
-.card {
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+/* 🌟 SECCIÓN DE ENTRADA */
+.input-area {
+    width: 40%;
+    max-width: 500px;
     text-align: center;
-    width: 400px;
+    margin-right: 3vw;
 }
 
 .title {
     font-size: 2.5em;
     color: #6a5acd;
+    margin-bottom: 20px;
 }
 
+/* Textarea */
 .textarea {
     width: 100%;
     height: 100px;
     border-radius: 5px;
     border: 1px solid #ccc;
     padding: 10px;
-    margin: 10px 0;
+    font-size: 1em;
+    background-color: #2d2d2d;
+    color: white;
+    transition: background-color 0.3s, opacity 0.3s;
 }
 
+/* Cuando el textarea está vacío */
+.textarea:empty {
+    color: grey;
+}
+
+/* Cambia de color cuando está deshabilitado */
+.textarea:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Botón */
 .btn {
     background-color: #6a5acd;
     color: white;
@@ -42,6 +65,7 @@ body {
     border-radius: 5px;
     padding: 10px 20px;
     cursor: pointer;
+    margin-top: 10px;
     transition: background-color 0.3s;
 }
 
@@ -49,16 +73,50 @@ body {
     background-color: #5a4db1;
 }
 
-.status-message {
-    margin: 10px 0;
-    color: #333;
-}
-
-.image-container {
-    margin-top: 20px;
-}
-
-.generated-image {
-    max-width: 100%;
+/* 🌟 SECCIÓN DE LA IMAGEN */
+.image-area {
+    width: 50%;
+    max-width: 600px;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
     border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Imagen generada */
+.generated-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+/* 🌟 SPINNER Y OSCURECIMIENTO */
+.loading-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.spinner {
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

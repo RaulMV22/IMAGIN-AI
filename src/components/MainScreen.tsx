@@ -1,20 +1,23 @@
 import { useState, useEffect } from "react";
-import './MainScreen.css';
+import "./MainScreen.css";
 
 const MainScreen = () => {
-  const [prompt, setPrompt] = useState<string>("");
-  const [imageUrl, setImageUrl] = useState<string>("");
+  const defaultImage = "/images/default.jpg"; // Imagen por defecto
+  const defaultPlaceholder = "Insert a description to generate an image."; // Texto por defecto
+  const [prompt, setPrompt] = useState<string>(defaultPlaceholder);
+  const [imageUrl, setImageUrl] = useState<string>(defaultImage);
   const [loading, setLoading] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>("");
 
   const generateImage = async () => {
-    if (!prompt.trim()) {
-      alert("Por favor ingresa una descripción para generar la imagen.");
+    if (!prompt.trim() || prompt === defaultPlaceholder) {
+      alert("Please enter a valid description.");
       return;
     }
 
     setLoading(true);
-    setStatusMessage("Generando imagen... Esto puede tardar hasta 5 minutos.");
+    setImageUrl(defaultImage); // Reinicia la imagen a la por defecto
+    setPrompt(defaultPlaceholder); // Restablece el texto del textarea
 
     try {
       const response = await fetch("/api/replicate", {
@@ -27,8 +30,7 @@ const MainScreen = () => {
       console.log("Respuesta de la API en el frontend:", data);
 
       if (data.imageUrl) {
-        setImageUrl(data.imageUrl);
-        setStatusMessage("Imagen generada con éxito.");
+        setImageUrl(data.imageUrl); // Carga la nueva imagen cuando se recibe
       } else {
         console.warn("No se recibió una imagen válida:", data);
         setStatusMessage("No se pudo generar la imagen. Intenta con otro prompt.");
@@ -41,7 +43,6 @@ const MainScreen = () => {
     }
   };
 
-  // Desaparecer el mensaje de estado después de 5 segundos
   useEffect(() => {
     if (statusMessage) {
       const timer = setTimeout(() => {
@@ -51,33 +52,57 @@ const MainScreen = () => {
     }
   }, [statusMessage]);
 
+  // Manejar el evento cuando el usuario hace clic en el textarea
+  const handleFocus = () => {
+    if (prompt === defaultPlaceholder) {
+      setPrompt("");
+    }
+  };
+
+  // Manejar cuando el usuario deja de escribir y no puso nada
+  const handleBlur = () => {
+    if (prompt.trim() === "") {
+      setPrompt(defaultPlaceholder);
+    }
+  };
+
+  // Manejar la tecla "Enter" en el textarea
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !loading) {
+      event.preventDefault();
+      generateImage();
+    }
+  };
+
   return (
     <div className="main-container">
       <div className="input-area">
-        <h1 className="title">Generador de Imágenes con IA</h1>
+        <h1 className="title">AI Image Generator</h1>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Describe la imagen que deseas generar"
+          onFocus={handleFocus} 
+          onBlur={handleBlur} 
+          onKeyDown={handleKeyDown} 
           className="textarea"
+          disabled={loading} 
         />
-        <br />
         <button onClick={generateImage} disabled={loading} className="btn">
-          {loading ? "Generando..." : "Generar Imagen"}
+          {loading ? "Generating..." : "Generate Image"}
         </button>
         {statusMessage && <p className="status-message">{statusMessage}</p>}
       </div>
+
       <div className="image-area">
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="Imagen generada"
-            className="generated-image"
-          />
+        {loading && (
+          <div className="loading-overlay">
+            <div className="spinner"></div>
+          </div>
         )}
+        <img src={imageUrl} alt="Generated Image" className={`generated-image ${loading ? "blurred" : ""}`} />
       </div>
     </div>
   );
 };
 
-export default MainScreen;      
+export default MainScreen;
