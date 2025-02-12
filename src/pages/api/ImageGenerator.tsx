@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generateImage } from "../pages/api/replicate";
+import { generateImage } from "./replicate";
 import "./MainScreen.css";
 
 const ImageGenerator = () => {
