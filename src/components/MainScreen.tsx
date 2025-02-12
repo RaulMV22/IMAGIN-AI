@@ -1,4 +1,4 @@
-import ImageGenerator from "../pages/api/ImageGenerator";
+import ImageGenerator from "./ImageGenerator";
 import "./MainScreen.css";
 
 const MainScreen = () => {
