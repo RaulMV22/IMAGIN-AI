@@ -1,45 +1,38 @@
-/* Contenedor principal que alinea todo en horizontal y centrado en la pantalla */
+/* ESTILOS GENERALES */
+body {
+    background: linear-gradient(135deg, #e0eafc, #cfdef3);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* CONTENEDOR PRINCIPAL */
 .main-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: row;  
     justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100%;
     gap: 5vw;
     padding: 2vw;
-    flex-wrap: nowrap;
 }
 
-/* Contenedor del generador de imágenes */
-.image-generator {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 3vw;
-    height: auto;
-}
-
-/* Sección de entrada */
+/* SECCIÓN DE ENTRADA */
 .input-area {
     width: 40%;
     max-width: 500px;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    height: auto;
+    text-align: center;
+    margin-right: 3vw;
 }
 
 .title {
     font-size: 2.5em;
     color: #6a5acd;
     margin-bottom: 20px;
-    text-align: left;
 }
 
+/* Textarea */
 .textarea {
     width: 100%;
     height: 100px;
@@ -52,6 +45,19 @@
     transition: background-color 0.3s, opacity 0.3s;
 }
 
+/* Cuando el textarea está vacío */
+.textarea:empty {
+    color: grey;
+}
+
+/* Cambia de color cuando está deshabilitado */
+.textarea:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Botón */
 .btn {
     background-color: #6a5acd;
     color: white;
@@ -67,17 +73,20 @@
     background-color: #5a4db1;
 }
 
-/* Sección de la imagen */
 .image-area {
     width: 50%;
     max-width: 600px;
+    height: auto;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    height: auto;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 
+/* Imagen generada */
 .generated-image {
     width: 100%;
     height: auto;
@@ -85,11 +94,28 @@
     border-radius: 10px;
 }
 
-/* Ajuste para alinear el bloque izquierdo con la parte superior de la imagen */
-.image-generator {
-    align-items: flex-start;
+/* SPINNER Y OSCURECIMIENTO */
+.loading-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
 }
 
-.input-area {
-    align-items: flex-start;
+.spinner {
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
