@@ -1,4 +1,4 @@
-/* 🌟 ESTILOS GENERALES */
+/* ESTILOS GENERALES */
 body {
     background: linear-gradient(135deg, #e0eafc, #cfdef3);
     font-family: 'Arial', sans-serif;
@@ -6,7 +6,7 @@ body {
     padding: 0;
 }
 
-/* 🌟 CONTENEDOR PRINCIPAL */
+/* CONTENEDOR PRINCIPAL */
 .main-container {
     display: flex;
     flex-direction: row;  
@@ -18,7 +18,7 @@ body {
     padding: 2vw;
 }
 
-/* 🌟 SECCIÓN DE ENTRADA */
+/* SECCIÓN DE ENTRADA */
 .input-area {
     width: 40%;
     max-width: 500px;
@@ -73,7 +73,6 @@ body {
     background-color: #5a4db1;
 }
 
-/* 🌟 SECCIÓN DE LA IMAGEN */
 .image-area {
     width: 50%;
     max-width: 600px;
@@ -95,7 +94,7 @@ body {
     border-radius: 10px;
 }
 
-/* 🌟 SPINNER Y OSCURECIMIENTO */
+/* SPINNER Y OSCURECIMIENTO */
 .loading-overlay {
     position: absolute;
     width: 100%;
