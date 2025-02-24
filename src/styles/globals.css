@@ -1,42 +1,231 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
+/* Estilo General */
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: #f8fafc;
+  color: #1f2937;
   margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* ✅ Centrar el contenido */
+  height: 100vh; /* ✅ Ocupa toda la pantalla */
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* Contenedor Principal - Totalmente centrado en pantalla */
+.container {
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  text-align: center;
+  position: absolute; /* ✅ Posiciona absolutamente en la pantalla */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* ✅ Centrado exacto */
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* Selector de Generadores */
+.generator-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px auto;
+  flex-wrap: nowrap;
+}
+
+/* Botones dentro del selector */
+.generator-btn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: white;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  height: 80px;
+  min-width: 110px;
+}
+
+/* Ajustar tamaño de iconos */
+.generator-btn img {
+  width: 32px;
+  height: 32px;
+}
+
+/* Estilizar el texto dentro de los botones */
+.generator-btn span {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Contenedor General del Módulo */
+.generator-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 900px;
+  margin: auto;
+}
+
+/* Contenedor del Generador de Imágenes */
+.image-generator-container {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 850px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenido del generador en fila */
+.generator-content {
+  display: flex;
+  flex-direction: row; /* ✅ Mantiene disposición horizontal */
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+}
+
+/* Área de entrada */
+.generator-input-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 45%;
+}
+
+/* Estilo del textarea */
+.generator-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 12px 15px;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 1rem;
+  resize: none;
+  background: white;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Cambia el borde y la sombra cuando el usuario hace clic */
+.generator-textarea:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0px 5px 15px rgba(139, 92, 246, 0.3);
+  outline: none;
+}
+
+/* Bloquear entrada cuando está deshabilitada */
+.generator-textarea:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Botón "Generate Image" con el mismo estilo */
+.generate-btn {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  font-size: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: fit-content;
+  display: block;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin: auto;
+}
+
+.generate-btn:hover {
+  opacity: 0.85;
+}
+
+/* Bloqueo sobre la imagen mientras carga */
+.loading-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4); /* ✅ Oscurece solo la imagen */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+}
+
+/* Ajuste para desactivar la imagen cuando carga */
+.generated-image.loading {
+  filter: brightness(0.5); /* ✅ Reduce el brillo en lugar de hacerla completamente blanca */
+  pointer-events: none;
+}
+
+/* Spinner de carga */
+.spinner {
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top: 5px solid #8b5cf6;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Área de la imagen generada */
+.generator-image-area {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Tamaño de la imagen generada */
+.generated-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsivo: vuelve a columna en pantallas pequeñas */
+@media (max-width: 768px) {
+  .generator-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .generator-input-area,
+  .generator-image-area {
+    width: 100%;
   }
 }

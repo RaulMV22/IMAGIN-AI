@@ -1,5 +1,5 @@
-import MainScreen from "@/components/MainScreen";
+import ClientPage from "../ClientPage";
 
 export default function Home() {
-  return <MainScreen />;
+  return <ClientPage />;
 }
