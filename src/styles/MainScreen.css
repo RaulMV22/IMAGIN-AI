@@ -1,0 +1,108 @@
+/* ESTILOS GENERALES */
+body {
+    background: linear-gradient(135deg, #e0eafc, #cfdef3);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* TITULO */
+.title {
+    font-size: 2.5em;
+    color: #6a5acd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sparkle-icon {
+    width: 30px;
+    height: 30px;
+    color: yellow;
+}
+
+/* SELECTOR DE GENERADORES */
+.generator-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.generator-btn {
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 2px solid #6a5acd;
+    background: white;
+    transition: background-color 0.3s;
+}
+
+.generator-btn.active {
+    background-color: #6a5acd;
+    color: white;
+}
+
+/* CONTENEDOR DEL GENERADOR */
+.generator-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 600px;
+}
+
+.generator-header {
+    margin-bottom: 1rem;
+}
+
+.generator-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8em;
+    color: #6a5acd;
+}
+
+.generator-title-icon {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+}
+
+.generator-description {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* IMAGEN GENERADA */
+.image-area {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.generated-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+}
