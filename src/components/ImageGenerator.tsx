@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import "../styles/globals.css";
 
-const ImageGenerator = () => {
+interface ImageGeneratorProps {
+  setIsGenerating: (value: boolean) => void; // ✅ Especificamos el tipo correctamente
+}
+
+const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
   const defaultImage = "/images/default.jpg";
   const defaultPlaceholder = "Insert a description to generate an image.";
   const [prompt, setPrompt] = useState<string>(defaultPlaceholder);
@@ -16,6 +20,7 @@ const ImageGenerator = () => {
     }
 
     setLoading(true);
+    setIsGenerating(true); // ✅ Bloquea la selección del generador mientras carga
     setImageUrl(defaultImage);
     setPrompt(defaultPlaceholder);
 
@@ -37,26 +42,16 @@ const ImageGenerator = () => {
       setStatusMessage("Hubo un error al generar la imagen.");
     } finally {
       setLoading(false);
+      setIsGenerating(false); // ✅ Permite cambiar de generador cuando termine
     }
   };
 
-  useEffect(() => {
-    if (statusMessage) {
-      const timer = setTimeout(() => {
-        setStatusMessage("");
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [statusMessage]);
-
-  /* Función para limpiar el texto inicial cuando el usuario hace clic */
   const handleFocus = () => {
     if (prompt === defaultPlaceholder) {
       setPrompt("");
     }
   };
 
-  /* Si el usuario deja vacío el textarea, vuelve al placeholder */
   const handleBlur = () => {
     if (prompt.trim() === "") {
       setPrompt(defaultPlaceholder);
@@ -65,7 +60,7 @@ const ImageGenerator = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !loading) {
-      event.preventDefault(); 
+      event.preventDefault();
       generateImage();
     }
   };
@@ -73,15 +68,15 @@ const ImageGenerator = () => {
   return (
     <div className="image-generator-container">
       <div className="generator-content">
-        {/* Entrada y Botón */}
         <div className="generator-input-area">
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onFocus={handleFocus}  
-            onBlur={handleBlur}    
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
             className="generator-textarea"
-            disabled={loading} 
+            disabled={loading}
           />
           <button onClick={generateImage} disabled={loading} className="generate-btn">
             {loading ? "Generating..." : "Generate Image"}
@@ -90,12 +85,16 @@ const ImageGenerator = () => {
 
         {/* Imagen Generada con Bloqueo */}
         <div className="generator-image-area">
+          <img 
+            src={imageUrl} 
+            alt="Generated Image" 
+            className={`generated-image ${loading ? "loading" : ""}`} 
+          />
           {loading && (
             <div className="loading-overlay">
               <div className="spinner"></div>
             </div>
           )}
-          <img src={imageUrl} alt="Generated Image" className="generated-image" />
         </div>
       </div>
     </div>

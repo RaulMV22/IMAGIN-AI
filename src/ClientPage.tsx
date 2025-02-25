@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Image, Video, AudioLines, Sparkles } from "lucide-react"
-import ImageGenerator from "../src/components/ImageGenerator" 
+import ImageGenerator from "../src/components/ImageGenerator"
 
 const generators = [
   { type: "image", Icon: Image, description: "Generate stunning images with AI", color: "from-blue-500 to-cyan-500" },
@@ -12,6 +12,8 @@ const generators = [
 
 export default function ClientPage() {
   const [selectedGenerator, setSelectedGenerator] = useState(generators[0].type)
+  const [isGenerating, setIsGenerating] = useState(false) // ✅ Estado para bloquear botones
+
   const selectedGen = generators.find((g) => g.type === selectedGenerator)
 
   return (
@@ -26,8 +28,11 @@ export default function ClientPage() {
         {generators.map((generator) => (
           <button
             key={generator.type}
-            className={`generator-btn ${selectedGenerator === generator.type ? "active" : ""}`}
-            onClick={() => setSelectedGenerator(generator.type)}
+            className={`generator-btn ${selectedGenerator === generator.type ? "active" : ""} ${
+              isGenerating ? "disabled" : "" /* ✅ Oscurecer y deshabilitar botones */
+            }`}
+            onClick={() => !isGenerating && setSelectedGenerator(generator.type)} // ✅ Bloquea clicks
+            disabled={isGenerating} // ✅ Deshabilita el botón
           >
             <generator.Icon className="generator-icon" />
             {generator.type.charAt(0).toUpperCase() + generator.type.slice(1)}
@@ -46,7 +51,7 @@ export default function ClientPage() {
         </div>
         <div className="generator-content">
           {selectedGenerator === "image" ? (
-            <ImageGenerator /> 
+            <ImageGenerator setIsGenerating={setIsGenerating} /> // ✅ Pasa el estado al generador
           ) : (
             <p className="placeholder-section">
               The {selectedGenerator} generator is coming soon! 
