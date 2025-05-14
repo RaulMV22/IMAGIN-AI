@@ -12,7 +12,7 @@ const generators = [
 
 export default function ClientPage() {
   const [selectedGenerator, setSelectedGenerator] = useState(generators[0].type)
-  const [isGenerating, setIsGenerating] = useState(false) // ✅ Estado para bloquear botones
+  const [isGenerating, setIsGenerating] = useState(false) 
 
   const selectedGen = generators.find((g) => g.type === selectedGenerator)
 
@@ -29,10 +29,10 @@ export default function ClientPage() {
           <button
             key={generator.type}
             className={`generator-btn ${selectedGenerator === generator.type ? "active" : ""} ${
-              isGenerating ? "disabled" : "" /* ✅ Oscurecer y deshabilitar botones */
+              isGenerating ? "disabled" : "" 
             }`}
-            onClick={() => !isGenerating && setSelectedGenerator(generator.type)} // ✅ Bloquea clicks
-            disabled={isGenerating} // ✅ Deshabilita el botón
+            onClick={() => !isGenerating && setSelectedGenerator(generator.type)} 
+            disabled={isGenerating} 
           >
             <generator.Icon className="generator-icon" />
             {generator.type.charAt(0).toUpperCase() + generator.type.slice(1)}
@@ -51,7 +51,7 @@ export default function ClientPage() {
         </div>
         <div className="generator-content">
           {selectedGenerator === "image" ? (
-            <ImageGenerator setIsGenerating={setIsGenerating} /> // ✅ Pasa el estado al generador
+            <ImageGenerator setIsGenerating={setIsGenerating} /> 
           ) : (
             <p className="placeholder-section">
               The {selectedGenerator} generator is coming soon! 
