@@ -1,4 +1,7 @@
+import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
+
+const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -15,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.REPLICATE_API_KEY}`,
+        Authorization: `Bearer ${process.env.REPLICATE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -23,10 +26,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         input: {
           width: 1024,
           height: 1024,
-          prompt: prompt,
+          prompt,
           model_variant: "1600M-1024px",
           guidance_scale: 5,
-          negative_prompt: "",
           pag_guidance_scale: 2,
           num_inference_steps: 18,
         },
@@ -34,46 +36,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const prediction = await response.json();
-    console.log("Respuesta inicial de la API de Replicate:", prediction);
-
     if (!prediction || !prediction.id) {
-      return res.status(500).json({ error: "No se pudo generar la imagen en Replicate", details: prediction });
+      return res.status(500).json({ error: "No se pudo generar la imagen", details: prediction });
     }
 
     const startTime = Date.now();
-    const pollingInterval = 5000;
     const maxWaitTime = 300000;
+    const pollingInterval = 5000;
 
     let result;
 
     while (Date.now() - startTime < maxWaitTime) {
-      await new Promise((resolve) => setTimeout(resolve, pollingInterval));
+      await new Promise((r) => setTimeout(r, pollingInterval));
 
-      const checkResponse = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
-        method: "GET",
+      const check = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
         headers: {
-          "Authorization": `Bearer ${process.env.REPLICATE_API_KEY}`,
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REPLICATE_API_KEY}`,
         },
       });
 
-      result = await checkResponse.json();
-      console.log("Estado actual de la imagen:", result);
+      result = await check.json();
 
       if (result.status === "succeeded" && result.output) {
-        if (typeof result.output === "string") {
-          return res.status(200).json({ imageUrl: result.output });
-        } else if (Array.isArray(result.output) && result.output.length > 0) {
-          return res.status(200).json({ imageUrl: result.output[0] });
-        }
+        const imageUrl = Array.isArray(result.output) ? result.output[0] : result.output;
+
+        // 👉 Guardar en base de datos
+        await prisma.generatedImage.create({
+          data: { prompt, imageUrl },
+        });
+
+        return res.status(200).json({ imageUrl });
       } else if (result.status === "failed") {
-        return res.status(500).json({ error: "Falló la generación de la imagen", details: result });
+        return res.status(500).json({ error: "Falló la generación de la imagen" });
       }
     }
 
-    return res.status(504).json({ error: "Tiempo de espera agotado en la API de Replicate" });
+    return res.status(504).json({ error: "Tiempo de espera agotado" });
   } catch (error) {
-    console.error("Error en la API de Replicate:", error);
-    return res.status(500).json({ error: "Error en la generación de la imagen" });
+    console.error("Error:", error);
+    return res.status(500).json({ error: "Error interno" });
   }
 }

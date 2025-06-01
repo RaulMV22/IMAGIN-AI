@@ -1,17 +1,24 @@
 import { useState, useEffect } from "react";
-import "../styles/globals.css";
+import "../../styles/globals.css";
 
 interface ImageGeneratorProps {
-  setIsGenerating: (value: boolean) => void; // ✅ Especificamos el tipo correctamente
+  setIsGenerating: (value: boolean) => void;
 }
 
 const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
   const defaultImage = "/images/default.jpg";
   const defaultPlaceholder = "Insert a description to generate an image.";
+
   const [prompt, setPrompt] = useState<string>(defaultPlaceholder);
   const [imageUrl, setImageUrl] = useState<string>(defaultImage);
   const [loading, setLoading] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>("");
+
+  useEffect(() => {
+    fetch("/api/lastGenerated")
+      .then((res) => res.json())
+      .catch((err) => console.error("Error al cargar imágenes recientes:", err));
+  }, [imageUrl]);
 
   const generateImage = async () => {
     if (!prompt.trim() || prompt === defaultPlaceholder) {
@@ -20,9 +27,9 @@ const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
     }
 
     setLoading(true);
-    setIsGenerating(true); // ✅ Bloquea la selección del generador mientras carga
+    setIsGenerating(true);
     setImageUrl(defaultImage);
-    setPrompt(defaultPlaceholder);
+    setStatusMessage("");
 
     try {
       const response = await fetch("/api/imageGenerator", {
@@ -34,6 +41,7 @@ const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
       const data = await response.json();
       if (data.imageUrl) {
         setImageUrl(data.imageUrl);
+        setPrompt(defaultPlaceholder);
       } else {
         setStatusMessage("No se pudo generar la imagen. Intenta con otro prompt.");
       }
@@ -42,7 +50,7 @@ const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
       setStatusMessage("Hubo un error al generar la imagen.");
     } finally {
       setLoading(false);
-      setIsGenerating(false); // ✅ Permite cambiar de generador cuando termine
+      setIsGenerating(false);
     }
   };
 
@@ -83,19 +91,21 @@ const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
           </button>
         </div>
 
-        {/* Imagen Generada con Bloqueo */}
         <div className="generator-image-area">
-          <img 
-            src={imageUrl} 
-            alt="Generated Image" 
-            className={`generated-image ${loading ? "loading" : ""}`} 
+          <img
+            src={imageUrl}
+            alt="Generated"
+            className={`generated-image ${loading ? "loading" : ""}`}
           />
           {loading && (
             <div className="loading-overlay">
               <div className="spinner"></div>
             </div>
           )}
+          {statusMessage && <p className="status-message">{statusMessage}</p>}
         </div>
+
+  
       </div>
     </div>
   );
