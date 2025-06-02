@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ImageGenerator from '../src/components/ImageGenerator'; // Ajusta la ruta según tu proyecto
+import ImageGenerator from '../src/components/generators/ImageGenerator'; // Ajusta la ruta según tu proyecto
 import '@testing-library/jest-dom'; // Para matchers como toBeInTheDocument
 import { jest } from '@jest/globals'; // Si usas Jest 27+
 

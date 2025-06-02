@@ -1,26 +1,28 @@
-import { useState, useEffect } from "react";
-import "../styles/globals.css";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../../styles/globals.css";
 
 interface ImageGeneratorProps {
-  setIsGenerating: (value: boolean) => void; // ✅ Especificamos el tipo correctamente
+  setIsGenerating: (value: boolean) => void;
+  onImageGenerated: (img: { imageUrl: string; prompt: string }) => void;
 }
 
-const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
+const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating, onImageGenerated }) => {
   const defaultImage = "/images/default.jpg";
   const defaultPlaceholder = "Insert a description to generate an image.";
   const [prompt, setPrompt] = useState<string>(defaultPlaceholder);
   const [imageUrl, setImageUrl] = useState<string>(defaultImage);
   const [loading, setLoading] = useState<boolean>(false);
-  const [statusMessage, setStatusMessage] = useState<string>("");
 
   const generateImage = async () => {
     if (!prompt.trim() || prompt === defaultPlaceholder) {
-      alert("Please enter a valid description.");
+      toast.error("Please enter a valid description.");
       return;
     }
 
     setLoading(true);
-    setIsGenerating(true); // ✅ Bloquea la selección del generador mientras carga
+    setIsGenerating(true);
     setImageUrl(defaultImage);
     setPrompt(defaultPlaceholder);
 
@@ -34,15 +36,16 @@ const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
       const data = await response.json();
       if (data.imageUrl) {
         setImageUrl(data.imageUrl);
+        onImageGenerated({ imageUrl: data.imageUrl, prompt });
       } else {
-        setStatusMessage("No se pudo generar la imagen. Intenta con otro prompt.");
+        toast.error("No se pudo generar la imagen. Intenta con otro prompt.");
       }
     } catch (error) {
       console.error("Error al generar la imagen:", error);
-      setStatusMessage("Hubo un error al generar la imagen.");
+      toast.error("Hubo un error al generar la imagen.");
     } finally {
       setLoading(false);
-      setIsGenerating(false); // ✅ Permite cambiar de generador cuando termine
+      setIsGenerating(false);
     }
   };
 
@@ -65,6 +68,34 @@ const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
     }
   };
 
+  const copyToClipboard = (url: string) => {
+    const fullUrl = url.startsWith("http") ? url : window.location.origin + url;
+    navigator.clipboard.writeText(fullUrl);
+    toast.success("¡Enlace copiado!");
+  };
+
+  const downloadImage = async (url: string, filename = "generated-image.jpg") => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("Error al descargar la imagen:", error);
+    toast.error("Error al descargar la imagen.");
+  }
+};
+
+
+  const isGeneratedImage = imageUrl !== defaultImage;
+
   return (
     <div className="image-generator-container">
       <div className="generator-content">
@@ -83,13 +114,29 @@ const ImageGenerator: React.FC<ImageGeneratorProps> = ({ setIsGenerating }) => {
           </button>
         </div>
 
-        {/* Imagen Generada con Bloqueo */}
-        <div className="generator-image-area">
-          <img 
-            src={imageUrl} 
-            alt="Generated Image" 
-            className={`generated-image ${loading ? "loading" : ""}`} 
+        <div className={`generator-image-area ${isGeneratedImage ? "hover-overlay" : ""}`}>
+          <img
+            src={imageUrl}
+            alt="Generated Image"
+            className={`generated-image ${loading ? "loading" : ""}`}
           />
+          {isGeneratedImage && (
+            <div className="image-actions">
+              <button
+                className="action-icon"
+                onClick={() => downloadImage(imageUrl, "generated-image.jpg")}
+
+              >
+                📥
+              </button>
+              <button
+                className="action-icon"
+                onClick={() => copyToClipboard(imageUrl)}
+              >
+                🔗
+              </button>
+            </div>
+          )}
           {loading && (
             <div className="loading-overlay">
               <div className="spinner"></div>

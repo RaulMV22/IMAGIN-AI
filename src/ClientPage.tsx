@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Image, Video, AudioLines, Sparkles } from "lucide-react"
-import ImageGenerator from "../src/components/ImageGenerator"
+import ImageGenerator from "./components/generators/ImageGenerator"
 
 const generators = [
   { type: "image", Icon: Image, description: "Generate stunning images with AI", color: "from-blue-500 to-cyan-500" },
