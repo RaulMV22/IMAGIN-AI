@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const images = await prisma.generatedImage.findMany({
       orderBy: { createdAt: "desc" },
-      take: 5,
+      take: 25,
     });
 
     return res.status(200).json(images);

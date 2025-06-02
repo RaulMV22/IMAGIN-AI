@@ -2,9 +2,15 @@ import Head from "next/head";
 import { useState } from "react";
 import ImageGenerator from "@/components/generators/ImageGenerator";
 import RecentImages from "@/components/RecentImages";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   const [, setIsGenerating] = useState(false);
+  const [latestGenerated, setLatestGenerated] = useState<{
+    imageUrl: string;
+    prompt: string;
+  } | null>(null);
 
   return (
     <>
@@ -14,7 +20,6 @@ export default function Home() {
       </Head>
 
       <main style={{ padding: "2rem", textAlign: "center", maxWidth: "1000px", margin: "0 auto" }}>
-        {/* Selector de tipo */}
         <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "2rem" }}>
           AI Content Generator
         </h1>
@@ -24,12 +29,15 @@ export default function Home() {
           <button className="tab-button" disabled>Audio</button>
         </div>
 
-        {/* Generador activo */}
-        <ImageGenerator setIsGenerating={setIsGenerating} />
+        <ImageGenerator
+          setIsGenerating={setIsGenerating}
+          onImageGenerated={(img) => setLatestGenerated(img)}
+        />
 
-        {/* Últimos generados (SIEMPRE abajo del todo) */}
-        <RecentImages />
+        <RecentImages latestGenerated={latestGenerated!} />
       </main>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }
