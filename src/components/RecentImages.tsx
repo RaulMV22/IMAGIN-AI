@@ -1,90 +1,104 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-interface ImageData {
-  imageUrl: string;
+interface MediaData {
+  url: string;
   prompt: string;
+  type: "image" | "video";
 }
 
 interface RecentImagesProps {
-  latestGenerated?: ImageData;
+  latestGenerated?: { imageUrl: string; prompt: string };
 }
 
 const RecentImages: React.FC<RecentImagesProps> = ({ latestGenerated }) => {
-  const [recentImages, setRecentImages] = useState<ImageData[]>([]);
+  const [recentItems, setRecentItems] = useState<MediaData[]>([]);
 
   useEffect(() => {
     fetch("/api/lastGenerated")
       .then((res) => res.json())
-      .then((data) => setRecentImages(data));
+      .then((data) => setRecentItems(data))
+      .catch(() => toast.error("Error al cargar los medios"));
   }, []);
 
+  const allItems = latestGenerated
+    ? [
+        {
+          url: latestGenerated.imageUrl,
+          prompt: latestGenerated.prompt,
+          type: "image",
+        },
+        ...recentItems.filter((item) => item.url !== latestGenerated.imageUrl),
+      ]
+    : recentItems;
+
+  const downloadFile = async (url: string, filename: string) => {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      toast.error("Error al descargar el archivo.");
+    }
+  };
+
   const copyToClipboard = (url: string) => {
-    const fullUrl = url.startsWith("http") ? url : window.location.origin + url;
-    navigator.clipboard.writeText(fullUrl);
+    navigator.clipboard.writeText(url);
     toast.success("¡Enlace copiado!");
   };
 
-  const allImages = latestGenerated
-    ? [latestGenerated, ...recentImages.filter(img => img.imageUrl !== latestGenerated.imageUrl)]
-    : recentImages;
-
-  if (allImages.length === 0) return null;
-
-const downloadImage = async (url: string, filename = "generated-image.jpg") => {
-  try {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error("Error al descargar la imagen:", error);
-    toast.error("Error al descargar la imagen.");
-  }
-};
-
+  if (allItems.length === 0) return null;
 
   return (
     <div style={{ marginTop: "60px" }}>
       <h2 style={{ fontSize: "1.4rem", fontWeight: "bold", marginBottom: "20px", textAlign: "center" }}>
         Últimos generados
       </h2>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center", width: "100%", }}
->
-        {allImages.map((img, idx) => (
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "20px",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        {allItems.map((item, idx) => (
           <div
             key={idx}
             className="image-container hover-overlay"
             style={{ position: "relative", maxWidth: "180px", textAlign: "center" }}
           >
-            <img
-              src={img.imageUrl}
-              alt={`Generado ${idx}`}
-              style={{ borderRadius: "12px", width: "100%", display: "block" }}
-            />
+            {item.type === "video" ? (
+              <video src={item.url} controls style={{ borderRadius: "12px", width: "100%" }} />
+            ) : (
+              <img
+                src={item.url}
+                alt={`Generado ${idx}`}
+                style={{ borderRadius: "12px", width: "100%", display: "block" }}
+              />
+            )}
+
             <div className="image-actions">
               <button
                 className="action-icon"
-                onClick={() => downloadImage(img.imageUrl, `generated-${idx}.jpg`)}
-
+                onClick={() => downloadFile(item.url, `generated-${idx}.${item.type === "video" ? "mp4" : "jpg"}`)}
               >
                 📥
               </button>
-              <button
-                className="action-icon"
-                onClick={() => copyToClipboard(img.imageUrl)}
-              >
+              <button className="action-icon" onClick={() => copyToClipboard(item.url)}>
                 🔗
               </button>
             </div>
-            <p style={{ fontSize: "0.8rem", marginTop: "8px" }}>{img.prompt}</p>
+            <p style={{ fontSize: "0.8rem", marginTop: "8px" }}>{item.prompt}</p>
           </div>
         ))}
       </div>

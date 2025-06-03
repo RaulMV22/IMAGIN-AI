@@ -267,33 +267,30 @@ body {
 }
 
 .image-actions {
-  display: none;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  gap: 8%;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  z-index: 10;
+  display: flex;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
+
 
 .hover-overlay:hover .image-actions {
   display: flex;
+  opacity: 1;
 }
 
 .action-icon {
   background: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
-  border-radius: 50%;
-  padding: 5%;
-  font-size: 180%;
-  text-align: center;
+  font-size: 1.5rem;
+  padding: 0.3em 0.6em;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
 }
 
 .action-icon:hover {
